@@ -10,6 +10,17 @@ class lex:
         self.token_table = []
         self.token_stream = []
 
+    def isnum(self, string):
+        cnt = 0
+        for i in range(len(string)):
+            c = string[i]
+            if not ('0' <= c and c <= '9' or c == '.'):
+                return False
+            cnt = cnt + (c == '.')
+            if c == '.' and (i == 0 or i+1 == len(string)):
+                return False
+        return cnt <= 1
+
     def gettokens(self):
         for i in range(len(self.instream)):
             while i < len(self.instream) and self.instream[i] in [' ', '\n', '\r', '\t']:
@@ -24,7 +35,16 @@ class lex:
                     self.token_stream.append(string)
                     flag = True
             if not flag:
-                if 'a' <= string[0] and string[0] <= 'z':  # 是一个 identifier
+                if 'a' <= string[0] and string[0] <= 'z':  # identifier
                     self.token_stream.append(["identifier", string])
-                    self.token_table.append([])
+                    if string not in self.token_table:
+                        self.token_table.append(string)
+                elif self.isnum(string):
+                    if '.' in string:  # realnum
+                        self.token_stream.append(["realnum", string])
+                    else:
+                        self.token_stream.append(["intnum", string])
+                else:
+                    "trigger error"
             i = j
+        return self.token_stream, self.token_table
