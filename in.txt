@@ -1,0 +1,1 @@
+{ a = 3 ; if ( a == 30 ) then a = a * b ; else fuck = 1 ; }

@@ -1,7 +1,7 @@
 
-class lex:
+class lexer:
     def __init__(self, file_path):
-        self.tokens = ["ID", "INTNUM", "REALNUM", "int", "real", ";", "=",
+        self.tokens = ["ID", "NUM", "int", "real", ";", "=",
                        "{", "}", "(", ")", "if", "then", "else", "+", "-",
                        "*", "/", ">", "<", "<=", ">=", "=="]
 
@@ -22,7 +22,8 @@ class lex:
         return cnt <= 1
 
     def gettokens(self):
-        for i in range(len(self.instream)):
+        i = 0
+        while i < len(self.instream):
             while i < len(self.instream) and self.instream[i] in [' ', '\n', '\r', '\t']:
                 i = i + 1
             j = i
@@ -30,21 +31,23 @@ class lex:
                 j = j+1
             string = self.instream[i:j]
             flag = False
-            for k in range(3, len(self.tokens)):
+            for k in range(2, len(self.tokens)):
                 if string == self.tokens[k]:
-                    self.token_stream.append(string)
+                    self.token_stream.append([string])
                     flag = True
             if not flag:
                 if 'a' <= string[0] and string[0] <= 'z':  # identifier
-                    self.token_stream.append(["identifier", string])
+                    self.token_stream.append(["ID", string])
                     if string not in self.token_table:
                         self.token_table.append(string)
                 elif self.isnum(string):
-                    if '.' in string:  # realnum
-                        self.token_stream.append(["realnum", string])
-                    else:
-                        self.token_stream.append(["intnum", string])
+                    self.token_stream.append(["NUM", string])
                 else:
                     "trigger error"
             i = j
         return self.token_stream, self.token_table
+
+
+if __name__ == "__main__":
+    lexer = lexer("in.txt")
+    print(lexer.gettokens())
