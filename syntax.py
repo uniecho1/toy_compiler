@@ -2,10 +2,6 @@ class parser:
     def __init__(self):
         self.grammar = []
         self.grammar.append(["program",  "compoundstmt"])
-        # self.grammar.append(["decls", "decl", ";", "decls"])
-        # self.grammar.append(["decls", "epsilon"])
-        # self.grammar.append(["decl", "int", "ID", "=", "INTNUM"])
-        # self.grammar.append(["decl", "real", "ID", "=", "REALNUM"])
         self.grammar.append(["stmt", "ifstmt"])
         self.grammar.append(["stmt", "whilestmt"])
         self.grammar.append(["stmt", "assgstmt"])
@@ -56,7 +52,6 @@ class parser:
             self.first[token] = self.getfirst(token)
 
         self.follow = {}
-        # self.follow["program"] = ["dollar"]
         for token in self.isterminal:
             if not self.isterminal[token]:
                 self.follow[token] = self.getfollow(token, [])
@@ -136,7 +131,6 @@ class parser:
                             if item not in res:
                                 res.append(item)
         del stack[-1]
-        # self.follow[cur] = res
         return res
 
     def getparsingtable(self):
