@@ -2,12 +2,12 @@
 class lexer:
     def __init__(self, file_path):
         self.tokens = ["ID", "NUM", "int", "real", ";", "=",
-                       "{", "}", "(", ")", "if", "then", "else", "+", "-",
+                       "{", "}", "(", ")", "if", "then", "else", "while", "+", "-",
                        "*", "/", ">", "<", "<=", ">=", "=="]
 
         f = open(file_path)
         self.instream = f.read()
-        self.token_table = []
+        self.symbol_table = {}
         self.token_stream = []
 
     def isnum(self, string):
@@ -38,16 +38,16 @@ class lexer:
             if not flag:
                 if 'a' <= string[0] and string[0] <= 'z':  # identifier
                     self.token_stream.append(["ID", string])
-                    if string not in self.token_table:
-                        self.token_table.append(string)
+                    if string not in self.symbol_table:
+                        self.symbol_table[string] = {}
                 elif self.isnum(string):
                     self.token_stream.append(["NUM", string])
                 else:
                     "trigger error"
             i = j
-        return self.token_stream, self.token_table
+        return self.token_stream, self.symbol_table
 
 
 if __name__ == "__main__":
-    lexer = lexer("in.txt")
+    lexer = lexer("in1.txt")
     print(lexer.gettokens())

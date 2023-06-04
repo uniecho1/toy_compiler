@@ -1,9 +1,9 @@
 from lexical import lexer
 from syntax import parser
 
-file_path = "in2.txt"
+file_path = "in1.txt"
 
-token_stream, token_table = lexer(file_path).gettokens()
+token_stream, symbol_table = lexer(file_path).gettokens()
 token_stream.append(["dollar"])
 parsing_table = parser().getparsingtable()
 
