@@ -134,7 +134,7 @@ class parser:
         return res
 
     def getparsingtable(self):
-        return self.parsing_table
+        return self.parsing_table, self.first
 
 
 if __name__ == "__main__":

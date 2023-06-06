@@ -1,1 +1,2 @@
-print(float(3))
+if 50 == "50":
+    print(1)
