@@ -54,14 +54,14 @@ class lexer:
         i = 0
         while i < len(self.instream):
             while i < len(self.instream) and self.instream[i] in [' ', '\n', '\r', '\t']:
-                i = i + 1
-                if i == '\n':
+                if self.instream[i] == '\n':
                     line = line+1
                     column = 1
-                elif i == '\t':
+                elif self.instream[i] == '\t':
                     column = column+4
                 else:
                     column = column+1
+                i = i + 1
             j = i
             while j < len(self.instream) and self.instream[j] not in [' ', '\n', '\r', '\t']:
                 j = j+1

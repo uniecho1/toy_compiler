@@ -18,8 +18,9 @@ class semantic_analyzer:
         if res[0] == "error":
             return res
         tmp = self.execute(1)
-        if tmp == "error":
-            return ["runtime error", "divide 0 happend"]
+        if type(tmp) == list and tmp[0] == "error":
+            tmp[0] = "runtime error"
+            return tmp+["divide 0 happend"]
         return ["accept", self.symbol_table]
 
     def build_syntax_tree(self):
@@ -31,8 +32,9 @@ class semantic_analyzer:
         while len(stack) and len(token_stream):
             token = stack[-1][0]
             id = stack[-1][1]
-            from_statement = stack[-1][2]
-            self.node[id] = [token]
+            # from_statement = stack[-1][2]
+            # self.node[id] = [token]
+            self.node[id] = [token, None, *token_stream[0][2:]]
             if token == "epsilon":
                 del stack[-1]
             elif token == token_stream[0][0]:
@@ -72,11 +74,11 @@ class semantic_analyzer:
             if token in ["program", "stmt", "stmts", "compoundstmt"]:
                 for newid in self.G[id]:
                     tmp = self.execute(newid)
-                    if tmp == "error":
+                    if type(tmp) == list and tmp[0] == "error":
                         return tmp
             elif token == "ifstmt":
                 tmp = self.calculate(self.G[id][2])
-                if tmp == "error":
+                if type(tmp) == list and tmp[0] == "error":
                     return tmp
                 if tmp:
                     self.execute(self.G[id][5])
@@ -85,15 +87,15 @@ class semantic_analyzer:
             elif token == "whilestmt":
                 while True:
                     tmp = self.calculate(self.G[id][2])
-                    if tmp == "error":
-                        return "error"
+                    if type(tmp) == list and tmp[0] == "error":
+                        return tmp
                     if not tmp:
                         break
                     self.execute(self.G[id][4])
             elif token == "assgstmt":
                 ID = self.node[self.G[id][0]][1]
                 tmp = self.calculate(self.G[id][2])
-                if tmp == "error":
+                if type(tmp) == list and tmp[0] == "error":
                     return tmp
                 self.symbol_table[ID]["val"] = tmp
             return "accept"
@@ -123,10 +125,10 @@ class semantic_analyzer:
                 return self.calculate(self.G[id][0])
             elif token == "boolexpr":
                 tmp1 = self.calculate(self.G[id][0])
-                if tmp1 == "error":
+                if type(tmp1) == list and tmp1[0] == "error":
                     return tmp1
                 tmp2 = self.calculate(self.G[id][2])
-                if tmp2 == "error":
+                if type(tmp2) == list and tmp2[0] == "error":
                     return tmp2
                 op = self.calculate(self.G[id][1])
                 if op == "<":
@@ -141,7 +143,7 @@ class semantic_analyzer:
                     return tmp1 == tmp2
             elif token in ["arithexpr", "multexpr"]:
                 tmp = self.calculate(self.G[id][0])
-                if tmp == "error":
+                if type(tmp) == list and tmp[0] == "error":
                     return tmp
                 self.inherited[self.G[id][1]] = tmp
                 return self.calculate(self.G[id][1])
@@ -151,7 +153,7 @@ class semantic_analyzer:
                 else:
                     op = self.statement[id][1]
                     tmp2 = self.calculate(self.G[id][1])
-                    if tmp2 == "error":
+                    if type(tmp2) == list and tmp2[0] == "error":
                         return tmp2
                     if op == '+':
                         tmp1 = self.inherited[id]+tmp2
@@ -161,7 +163,7 @@ class semantic_analyzer:
                         tmp1 = self.inherited[id]*tmp2
                     elif op == '/':
                         if tmp2 == 0:
-                            return "error"
+                            return ["error", *self.node[id][2:]]
                         tmp1 = self.inherited[id]/tmp2
                     self.inherited[self.G[id][2]] = tmp1
                     return self.calculate(self.G[id][2])
