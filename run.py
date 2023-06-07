@@ -3,8 +3,8 @@ from syntax import parser
 from semantic import semantic_analyzer
 
 
-def run(file_path):
-    res = lexer(file_path).gettokens()
+def run(instream):
+    res = lexer(instream).gettokens()
     if res[0] == "error":
         res[0] = "lexical error"
         return res
@@ -20,4 +20,4 @@ def run(file_path):
     return res[1]
 
 
-print(run("in1.txt"))
+# print(run("in1.txt"))

@@ -1,12 +1,12 @@
 
 class lexer:
-    def __init__(self, file_path):
+    def __init__(self, instream):
         self.tokens = ["ID", "NUM", "int", "real", ";", "=",
                        "{", "}", "(", ")", "if", "then", "else", "while", "+", "-",
                        "*", "/", ">", "<", "<=", ">=", "=="]
 
-        f = open(file_path)
-        self.instream = f.read()
+        # f = open(file_path)
+        self.instream = instream
         self.symbol_table = {}
         self.token_stream = []
 
