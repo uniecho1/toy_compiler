@@ -17,7 +17,12 @@ def run(instream):
         return res
     if res[0] == "runtime error":
         return res
-    return res[1]
+    table = ""
+    for id in res[1]:
+        val = res[1][id]
+        if val != {}:
+            table = table+id+" = "+str(val)+"\n"
+    return table
 
 
 # print(run("in1.txt"))

@@ -45,7 +45,7 @@ class lexer:
         else:
             tmp1, tmp2 = string.split("e")
             if tmp2[0] == '+' or tmp2[0] == '-':
-                del tmp2[0]
+                tmp2 = tmp2[1:]
             return (self.isintnum(tmp1) or self.isrealnum(tmp1)) and self.isintnum(tmp2)
 
     def gettokens(self):
@@ -79,7 +79,7 @@ class lexer:
                 elif self.isnum(string):
                     self.token_stream.append(["NUM", string, line, column])
                 else:
-                    return ["error", line, column, string]
+                    return ["error", line, column, f"\"{string}\" can't be accepted as a legal token."]
             column = column+len(string)
             i = j
 
