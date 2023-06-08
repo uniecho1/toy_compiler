@@ -48,6 +48,12 @@ class lexer:
                 tmp2 = tmp2[1:]
             return (self.isintnum(tmp1) or self.isrealnum(tmp1)) and self.isintnum(tmp2)
 
+    def isletter(self, c):
+        return ('a' <= c and c <= 'z') or ('A' <= c and c <= 'Z')
+
+    def isdigit(self, c):
+        return '0' <= c and c <= '9'
+
     def gettokens(self):
         line = 1
         column = 1
@@ -58,7 +64,7 @@ class lexer:
                     line = line+1
                     column = 1
                 elif self.instream[i] == '\t':
-                    column = column+4
+                    column = column+1
                 else:
                     column = column+1
                 i = i + 1
@@ -72,7 +78,12 @@ class lexer:
                     self.token_stream.append([string, None, line, column])
                     flag = True
             if not flag:
-                if 'a' <= string[0] and string[0] <= 'z':  # identifier
+                if self.isletter(string[0]):  # identifier
+                    if len(string) > 64:
+                        return ["error", line, column, f"\"{string}\" is too long."]
+                    for item in string:
+                        if not self.isdigit(item) and not self.isletter(item):
+                            return ["error", line, column, f"\"{string}\" can't be accepted as a legal token."]
                     self.token_stream.append(["ID", string, line, column])
                     if string not in self.symbol_table:
                         self.symbol_table[string] = {}

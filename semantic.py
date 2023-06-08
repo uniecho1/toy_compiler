@@ -85,9 +85,11 @@ class semantic_analyzer:
                 if type(tmp) == list and tmp[0] == "error":
                     return tmp
                 if tmp:
-                    self.execute(self.G[id][5])
+                    tmp = self.execute(self.G[id][5])
                 else:
-                    self.execute(self.G[id][7])
+                    tmp = self.execute(self.G[id][7])
+                if type(tmp) == list and tmp[0] == "error":
+                    return tmp
             elif token == "whilestmt":
                 while True:
                     tmp = self.calculate(self.G[id][2])

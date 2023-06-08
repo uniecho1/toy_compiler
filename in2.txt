@@ -3,5 +3,5 @@
 	if ( a == 5 ) then 
 		a = a * b ; 
 	else 
-		c = 1 
+		c = e ;
 }

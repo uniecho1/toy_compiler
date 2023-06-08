@@ -5,6 +5,8 @@ from syntax import parser
 from semantic import semantic_analyzer
 from PySide6.QtWidgets import QApplication, QMainWindow, QTextEdit,  QFileDialog, QWidget, QVBoxLayout, QSplitter
 from PySide6.QtGui import QAction, QFont, QTextCursor
+# import PySide6.QtGui.QTextCursor
+from PySide6.QtDesigner import QDesignerFormWindowCursorInterface as QDF
 # from run import run
 
 
@@ -97,6 +99,16 @@ class IDE(QMainWindow):
             res = res[:-1]
         return res
 
+    def move_cursor(self, line, column):
+        self.text_edit.moveCursor(QTextCursor.MoveOperation.Start,
+                                  QTextCursor.MoveMode.MoveAnchor)
+        for _ in range(line-1):
+            self.text_edit.moveCursor(
+                QTextCursor.MoveOperation.Down, QTextCursor.MoveMode.MoveAnchor)
+        for _ in range(column-1):
+            self.text_edit.moveCursor(
+                QTextCursor.MoveOperation.Right, QTextCursor.MoveMode.MoveAnchor)
+
     def compile_and_run(self):
         """
         """
@@ -108,6 +120,7 @@ class IDE(QMainWindow):
         res = lexer(instream).gettokens()
         if res[0] == "error":
             res[0] == "LexicalError"
+            self.move_cursor(res[1], res[2])
             self.update_output(
                 f"{res[0]} on line {res[1]}, column {res[2]}: {res[3]}\n\n")
             return
@@ -118,6 +131,7 @@ class IDE(QMainWindow):
         res = parser(token_stream).getparsingtable()
         if res[0] == "error":
             res[0] = "SyntaxError"
+            self.move_cursor(res[1], res[2])
             self.update_output(
                 f"{res[0]} on line {res[1]}, column {res[2]}: {res[3]}\n\n")
             return
@@ -129,6 +143,7 @@ class IDE(QMainWindow):
                                 statement).get_symbol_table()
         if res[0] == "error":
             res[0] = "RuntimeError"
+            self.move_cursor(res[1], res[2])
             self.update_output(
                 f"{res[0]} on line {res[1]}, column {res[2]}: {res[3]}\n\n")
             return
