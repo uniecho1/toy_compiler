@@ -1,12 +1,12 @@
 class semantic_analyzer:
-    def __init__(self, token_stream, symbol_table, parsing_table, first):
-        self.token_stream = token_stream
+    def __init__(self, symbol_table, G, node, statement):
+        # self.token_stream = token_stream
         self.symbol_table = symbol_table
-        self.parsing_table = parsing_table
-        self.first = first
-        self.node = {}
-        self.G = {}
-        self.statement = {}
+        # self.parsing_table = parsing_table
+        # self.first = first
+        self.node = node
+        self.G = G
+        self.statement = statement
         self.synthesized = {}
         self.inherited = {}
 
@@ -14,60 +14,59 @@ class semantic_analyzer:
     #     return self.node, self.G
 
     def get_symbol_table(self):
-        res = self.build_syntax_tree()
-        if res[0] == "error":
-            return res
+        # res = self.build_syntax_tree()
+        # if res[0] == "error":
+        #     return res
         tmp = self.execute(1)
         if type(tmp) == list and tmp[0] == "error":
-            tmp[0] = "runtime error"
             return tmp+["divide 0 happend"]
         return ["accept", self.symbol_table]
 
-    def build_syntax_tree(self):
-        excpt = []
-        stack = [["dollar", 0, ["init"]],
-                 ["program", 1, ["init"]]]
-        idx = 1
-        token_stream = self.token_stream
-        while len(stack) and len(token_stream):
-            token = stack[-1][0]
-            id = stack[-1][1]
-            # from_statement = stack[-1][2]
-            # self.node[id] = [token]
-            self.node[id] = [token, None, *token_stream[0][2:]]
-            if token == "epsilon":
-                del stack[-1]
-            elif token == token_stream[0][0]:
-                self.node[id] = token_stream[0]
-                del stack[-1]
-                del token_stream[0]
-            elif token in self.parsing_table and token_stream[0][0] in self.parsing_table[token]:
-                statement = self.parsing_table[token][token_stream[0][0]]
-                self.statement[id] = statement
-                del stack[-1]
-                for i in range(len(statement)-1, 0, -1):
-                    stack.append([statement[i], idx+i, statement])
-                    if id not in self.G:
-                        self.G[id] = []
-                    self.G[id].append(idx+len(statement)-i)
-                idx = idx + len(statement) - 1
-            else:
-                if token not in self.parsing_table and len(excpt) == 0:
-                    return ["error", token_stream[0][2], token_stream[0][3], f"expected \"{token}\", but got {token_stream[0][0]}."]
-                else:
-                    for item in self.first[token]:
-                        if item != "epsilon" and item not in excpt:
-                            excpt.append(item)
-                    if "epsilon" in self.first[token]:
-                        del stack[-1]
-                    else:
-                        tmp = ""
-                        for item in excpt:
-                            tmp = tmp+"\""+item+"\""+" "
-                        if tmp[-1] == " ":
-                            tmp = tmp[:-1]
-                        return ["error", token_stream[0][2], token_stream[0][3], f"expected {tmp}, but not \"{token_stream[0][0]}\"."]
-        return ["accept"]
+    # def build_syntax_tree(self):
+    #     excpt = []
+    #     stack = [["dollar", 0, ["init"]],
+    #              ["program", 1, ["init"]]]
+    #     idx = 1
+    #     token_stream = self.token_stream
+    #     while len(stack) and len(token_stream):
+    #         token = stack[-1][0]
+    #         id = stack[-1][1]
+    #         # from_statement = stack[-1][2]
+    #         # self.node[id] = [token]
+    #         self.node[id] = [token, None, *token_stream[0][2:]]
+    #         if token == "epsilon":
+    #             del stack[-1]
+    #         elif token == token_stream[0][0]:
+    #             self.node[id] = token_stream[0]
+    #             del stack[-1]
+    #             del token_stream[0]
+    #         elif token in self.parsing_table and token_stream[0][0] in self.parsing_table[token]:
+    #             statement = self.parsing_table[token][token_stream[0][0]]
+    #             self.statement[id] = statement
+    #             del stack[-1]
+    #             for i in range(len(statement)-1, 0, -1):
+    #                 stack.append([statement[i], idx+i, statement])
+    #                 if id not in self.G:
+    #                     self.G[id] = []
+    #                 self.G[id].append(idx+len(statement)-i)
+    #             idx = idx + len(statement) - 1
+    #         else:
+    #             if token not in self.parsing_table and len(excpt) == 0:
+    #                 return ["error", token_stream[0][2], token_stream[0][3], f"expected \"{token}\", but got {token_stream[0][0]}."]
+    #             else:
+    #                 for item in self.first[token]:
+    #                     if item != "epsilon" and item not in excpt:
+    #                         excpt.append(item)
+    #                 if "epsilon" in self.first[token]:
+    #                     del stack[-1]
+    #                 else:
+    #                     tmp = ""
+    #                     for item in excpt:
+    #                         tmp = tmp+"\""+item+"\""+" "
+    #                     if tmp[-1] == " ":
+    #                         tmp = tmp[:-1]
+    #                     return ["error", token_stream[0][2], token_stream[0][3], f"expected {tmp}, but not \"{token_stream[0][0]}\"."]
+    #     return ["accept"]
 
     def execute(self, id):
         if id not in self.G:

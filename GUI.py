@@ -1,7 +1,11 @@
 import sys
+import datetime
+from lexical import lexer
+from syntax import parser
+from semantic import semantic_analyzer
 from PySide6.QtWidgets import QApplication, QMainWindow, QTextEdit,  QFileDialog, QWidget, QVBoxLayout, QSplitter
 from PySide6.QtGui import QAction, QFont, QTextCursor
-from run import run
+# from run import run
 
 
 class IDE(QMainWindow):
@@ -20,6 +24,7 @@ class IDE(QMainWindow):
 
         font.setPointSize(20)
         self.text_edit = QTextEdit(self)
+        # self.text_edit.setDocumentTitle("fuck")
         self.text_edit.setFont(font)
         layout.addWidget(self.text_edit)
         # self.setCentralWidget(self.text_edit)
@@ -76,23 +81,64 @@ class IDE(QMainWindow):
         self.compilemenu = self.menu.addMenu("Compile")
         self.compilemenu.addAction(self.compile_action)
 
+    def update_output(self, info):
+        self.output_info.setText(
+            self.output_info.toPlainText()+info)
+        self.output_info.moveCursor(QTextCursor.MoveOperation.End)
+
+    def to_string(self, token_stream):
+        res = ""
+        for token in token_stream:
+            if token[0] in ['ID', 'NUM']:
+                res = res+f"{token[0:2]}"+", "
+            else:
+                res = res+"[\""+token[0]+"\"]"+", "
+        while res[-1] in [" ", ","]:
+            res = res[:-1]
+        return res
+
     def compile_and_run(self):
         """
         """
         self.save_file()
         instream = self.text_edit.toPlainText()
-        res = run(instream)
-        if type(res) == list:
-            """compile error"""
-            info = f"[Running] {self.path}\n {res[0]} on line {res[1]}, column {res[2]}: {res[3]}\n[Done]"
-            # print(info)
-            self.output_info.setText(
-                self.output_info.toPlainText()+info+"\n"+"\n")
-        else:
-            info = f"[Running] {self.path}\n{res}[Done]"
-            self.output_info.setText(
-                self.output_info.toPlainText()+info+"\n"+"\n")
-        self.output_info.moveCursor(QTextCursor.MoveOperation.End)
+        time = str(datetime.datetime.now()).split('.')[0]
+        self.update_output(f"Compile and Run at {time}:\n\n")
+        self.update_output("[LexicalAnalyzing]\n")
+        res = lexer(instream).gettokens()
+        if res[0] == "error":
+            res[0] == "LexicalError"
+            self.update_output(
+                f"{res[0]} on line {res[1]}, column {res[2]}: {res[3]}\n\n")
+            return
+        token_stream, symbol_table = res[1], res[2]
+        self.update_output(self.to_string(token_stream)+'\n\n')
+
+        self.update_output("[SyntaxAnalyzing]\n")
+        res = parser(token_stream).getparsingtable()
+        if res[0] == "error":
+            res[0] = "SyntaxError"
+            self.update_output(
+                f"{res[0]} on line {res[1]}, column {res[2]}: {res[3]}\n\n")
+            return
+        G, node, statement, parsingtree = res[1], res[2], res[3], res[4]
+        self.update_output(parsingtree+"\n")
+
+        self.update_output("[Running]\n")
+        res = semantic_analyzer(symbol_table, G, node,
+                                statement).get_symbol_table()
+        if res[0] == "error":
+            res[0] = "RuntimeError"
+            self.update_output(
+                f"{res[0]} on line {res[1]}, column {res[2]}: {res[3]}\n\n")
+            return
+        table = ""
+        for id in res[1]:
+            val = res[1][id]
+            if val != {}:
+                table = table+id+" = "+str(val)+"\n"
+        self.update_output(table+'\n')
+        self.update_output("[Done]\n\n\n")
 
     def new_file(self):
         self.text_edit.clear()

@@ -9,9 +9,9 @@ def run(instream):
         res[0] = "lexical error"
         return res
     token_stream, symbol_table = res[1], res[2]
-    parsing_table, first = parser().getparsingtable()
-    res = semantic_analyzer(token_stream, symbol_table,
-                            parsing_table, first).get_symbol_table()
+    G, node, statement, parsingtree = parser(token_stream).getparsingtable()
+    res = semantic_analyzer(symbol_table, G, node,
+                            statement).get_symbol_table()
     if res[0] == "error":
         res[0] = "syntax error"
         return res

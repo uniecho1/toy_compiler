@@ -1,5 +1,7 @@
 class parser:
-    def __init__(self):
+    def __init__(self, token_stream):
+        self.token_stream = token_stream
+
         self.grammar = []
         self.grammar.append(["program",  "compoundstmt"])
         self.grammar.append(["stmt", "ifstmt"])
@@ -78,6 +80,11 @@ class parser:
                         self.parsing_table[statement[0]] = {
                             item: statement}
 
+        self.node = {}
+        self.statement = {}
+        self.G = {}
+        self.parsing_tree = ""
+
     def getfirst(self, cur):
         if cur in self.first:
             return self.first[cur]
@@ -133,8 +140,69 @@ class parser:
         del stack[-1]
         return res
 
+    def build_syntax_tree(self):
+        excpt = []
+        stack = [["dollar", 0, ["init"]],
+                 ["program", 1, ["init"]]]
+        tabs = ["", ""]
+        idx = 1
+        token_stream = self.token_stream
+        while len(stack) and len(token_stream):
+            token = stack[-1][0]
+            id = stack[-1][1]
+            # from_statement = stack[-1][2]
+            # self.node[id] = [token]
+            self.node[id] = [token, None, *token_stream[0][2:]]
+            if token == "epsilon":
+                self.parsing_tree = self.parsing_tree + \
+                    tabs[-1]+token+'\n'
+                del tabs[-1]
+                del stack[-1]
+            elif token == token_stream[0][0]:
+                if stack[-1][0] != "dollar":
+                    self.parsing_tree = self.parsing_tree + \
+                        tabs[-1]+token+'\n'
+                self.node[id] = token_stream[0]
+                del tabs[-1]
+                del stack[-1]
+                del token_stream[0]
+            elif token in self.parsing_table and token_stream[0][0] in self.parsing_table[token]:
+                statement = self.parsing_table[token][token_stream[0][0]]
+                self.statement[id] = statement
+                tab = tabs[-1]
+                self.parsing_tree = self.parsing_tree+tab+token+'\n'
+                del tabs[-1]
+                del stack[-1]
+                for i in range(len(statement)-1, 0, -1):
+                    stack.append([statement[i], idx+i, statement])
+                    tabs.append(tab+'    ')
+                    if id not in self.G:
+                        self.G[id] = []
+                    self.G[id].append(idx+len(statement)-i)
+                idx = idx + len(statement) - 1
+            else:
+                if token not in self.parsing_table and len(excpt) == 0:
+                    return ["error", token_stream[0][2], token_stream[0][3], f"expected \"{token}\", but got {token_stream[0][0]}."]
+                else:
+                    for item in self.first[token]:
+                        if item != "epsilon" and item not in excpt:
+                            excpt.append(item)
+                    if "epsilon" in self.first[token]:
+                        del stack[-1]
+                    else:
+                        tmp = ""
+                        for item in excpt:
+                            tmp = tmp+"\""+item+"\""+" "
+                        if tmp[-1] == " ":
+                            tmp = tmp[:-1]
+                        return ["error", token_stream[0][2], token_stream[0][3], f"expected {tmp}, but not \"{token_stream[0][0]}\"."]
+        return ["accept"]
+
     def getparsingtable(self):
-        return self.parsing_table, self.first
+        res = self.build_syntax_tree()
+        if res[0] == "accept":
+            res = res+[self.G, self.node, self.statement, self.parsing_tree]
+        return res
 
 
 if __name__ == "__main__":
