@@ -3,7 +3,7 @@ class lexer:
     def __init__(self, instream):
         self.tokens = ["ID", "NUM", "int", "real", ";", "=",
                        "{", "}", "(", ")", "if", "then", "else", "while", "+", "-",
-                       "*", "/", ">", "<", "<=", ">=", "=="]
+                       "*", "/", ">", "<", "<=", ">=", "==", "dollar"]
 
         # f = open(file_path)
         self.instream = instream
@@ -68,6 +68,8 @@ class lexer:
                 else:
                     column = column+1
                 i = i + 1
+            if i == len(self.instream):
+                break
             j = i
             while j < len(self.instream) and self.instream[j] not in [' ', '\n', '\r', '\t']:
                 j = j+1
@@ -75,7 +77,8 @@ class lexer:
             flag = False
             for k in range(2, len(self.tokens)):
                 if string == self.tokens[k]:
-                    self.token_stream.append([string, None, line, column])
+                    self.token_stream.append(
+                        [string, None, line, column, i, j])
                     flag = True
             if not flag:
                 if self.isletter(string[0]):  # identifier
@@ -84,11 +87,13 @@ class lexer:
                     for item in string:
                         if not self.isdigit(item) and not self.isletter(item):
                             return ["error", line, column, f"\"{string}\" can't be accepted as a legal token."]
-                    self.token_stream.append(["ID", string, line, column])
+                    self.token_stream.append(
+                        ["ID", string, line, column, i, j])
                     if string not in self.symbol_table:
                         self.symbol_table[string] = {}
                 elif self.isnum(string):
-                    self.token_stream.append(["NUM", string, line, column])
+                    self.token_stream.append(
+                        ["NUM", string, line, column, i, j])
                 else:
                     return ["error", line, column, f"\"{string}\" can't be accepted as a legal token."]
             column = column+len(string)

@@ -117,7 +117,7 @@ class semantic_analyzer:
                 if "val" in self.symbol_table[ID]:
                     return self.symbol_table[ID]["val"]
                 else:
-                    return ["error", *self.node[id][2:], f"uninitialized ID \"{self.node[id][1]}\" used as right value."]
+                    return ["error", self.node[id][2], self.node[id][3], f"uninitialized ID \"{self.node[id][1]}\" used as right value.", self.node[id][4], self.node[id][5]]
             elif token in ["<", ">", "<=", ">=", "=="]:
                 return token
         else:
@@ -169,7 +169,7 @@ class semantic_analyzer:
                         tmp1 = self.inherited[id]*tmp2
                     elif op == '/':
                         if tmp2 == 0:
-                            return ["error", *self.node[id][2:], "can't divide 0."]
+                            return ["error", self.node[id][2], self.node[id][3], "can't divide 0.", self.node[id][4], self.node[id][5]]
                         tmp1 = self.inherited[id]/tmp2
                     self.inherited[self.G[id][2]] = tmp1
                     return self.calculate(self.G[id][2])

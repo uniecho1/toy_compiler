@@ -182,7 +182,9 @@ class parser:
                 idx = idx + len(statement) - 1
             else:
                 if token not in self.parsing_table and len(excpt) == 0:
-                    return ["error", token_stream[0][2], token_stream[0][3], f"expected \"{token}\", but got {token_stream[0][0]}."]
+                    if token_stream[0][0] == "dollar":
+                        token_stream[0][0] = "EOF"
+                    return ["error", token_stream[0][2], token_stream[0][3], f"expected \"{token}\", but got {token_stream[0][0]}.", token_stream[0][4], token_stream[0][5]]
                 else:
                     for item in self.first[token]:
                         if item != "epsilon" and item not in excpt:
@@ -195,7 +197,9 @@ class parser:
                             tmp = tmp+"\""+item+"\""+" "
                         if tmp[-1] == " ":
                             tmp = tmp[:-1]
-                        return ["error", token_stream[0][2], token_stream[0][3], f"expected {tmp}, but not \"{token_stream[0][0]}\"."]
+                        if token_stream[0][0] == "dollar":
+                            token_stream[0][0] = "EOF"
+                        return ["error", token_stream[0][2], token_stream[0][3], f"expected {tmp}, but not \"{token_stream[0][0]}\".", token_stream[0][4], token_stream[0][5]]
         return ["accept"]
 
     def getparsingtable(self):
