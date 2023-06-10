@@ -103,5 +103,7 @@ class lexer:
 
 
 if __name__ == "__main__":
-    lexer = lexer("in1.txt")
-    print(lexer.gettokens())
+    f = open("in2.txt")
+    instream = f.read()+" dollar"
+    # print(instream)
+    print(lexer(instream).gettokens())

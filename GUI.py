@@ -1,6 +1,6 @@
 import sys
 import datetime
-from lexical import lexer
+from newlexical import lexer
 from syntax import parser
 from semantic import semantic_analyzer
 from PySide6.QtWidgets import QApplication, QMainWindow, QTextEdit,  QFileDialog, QWidget, QVBoxLayout, QSplitter, QLabel, QHBoxLayout, QTabWidget
@@ -102,9 +102,8 @@ class IDE(QMainWindow):
             format.setForeground(QColor("black"))
 
             cursor = self.left_widget.textCursor()
-            cursor.setPosition(self.red_l)
-            cursor.movePosition(QTextCursor.Right,
-                                QTextCursor.KeepAnchor, self.red_r-self.red_l)
+            cursor.movePosition(QTextCursor.Start)
+            cursor.movePosition(QTextCursor.End, QTextCursor.KeepAnchor)
             cursor.mergeCharFormat(format)
             self.red = False
 
@@ -197,7 +196,7 @@ class IDE(QMainWindow):
         time = str(datetime.datetime.now()).split('.')[0]
         self.update_output(f"Compile and Run at {time}:\n\n")
         self.update_output("[LexicalAnalyzing]\n")
-        res = lexer(instream).gettokens()
+        res = lexer(instream).get_token_stream()
         if res[0] == "error":
             res[0] == "LexicalError"
             self.move_cursor(res[1], res[2], res[4], res[5])
