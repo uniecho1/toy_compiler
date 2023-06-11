@@ -1,6 +1,8 @@
 class parser:
     def __init__(self, token_stream):
         self.token_stream = token_stream
+        # ["dollar", None, token_stream[-1][2], token_stream[-1]
+        #     [3]+len(token_stream[-1][0]), token_stream[-1][4], token_stream[-1][4]]
 
         self.grammar = []
         self.grammar.append(["program",  "compoundstmt"])

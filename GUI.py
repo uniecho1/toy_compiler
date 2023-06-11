@@ -1,6 +1,6 @@
 import sys
 import datetime
-from newlexical import lexer
+from new_new_lexcal import lexer
 from syntax import parser
 from semantic import semantic_analyzer
 from PySide6.QtWidgets import QApplication, QMainWindow, QTextEdit,  QFileDialog, QWidget, QVBoxLayout, QSplitter, QLabel, QHBoxLayout, QTabWidget
@@ -58,43 +58,13 @@ class IDE(QMainWindow):
         self.main_layout.addWidget(self.right_column, 7)
         self.main_widget.setLayout(self.main_layout)
 
-        # layout = QSplitter(self)
         self.setCentralWidget(self.main_widget)
-
-        # font = QFont()
-
-        # left_column = QVBoxLayout()
-        # title_lable = QLabel("CodeEditor")
-        # font.setPointSize(20)
-        # self.text_edit = QTextEdit(self)
-        # # self.text_edit.setDocumentTitle("fuck")
-        # self.text_edit.setFont(font)
-        # left_column.addWidget(title_lable)
-        # left_column.addWidget(self.text_edit)
-        # layout.addWidget(left_column)
-        # # self.setCentralWidget(self.text_edit)
-
-        # font.setPointSize(14)
-        # self.output_info = QTextEdit(self)
-        # self.output_info.setFont(font)
-        # self.output_info.setReadOnly(True)
-        # # self.output_info.textChanged.connect(self.scroll_to_bottom)
-        # layout.addWidget(self.output_info)
-
-        # layout.setSizes([500, 200])
 
         self.create_actions()
         self.create_menus()
 
         self.setWindowTitle("ToyCompiler")
         self.setGeometry(100, 100, 800, 600)
-
-    # def add_new_tab(self, title="untitled"):
-    #     text_edit = QTextEdit()
-    #     font = QFont()
-    #     font.setPointSize(20)
-    #     text_edit.setFont(font)
-    #     self.left_widget.addTab(text_edit, title)
 
     def clear_red(self):
         if self.red:
@@ -126,12 +96,6 @@ class IDE(QMainWindow):
         self.compile_action = QAction(
             "Compile And Run", self, shortcut="Ctrl+Alt+N")
         self.compile_action.triggered.connect(self.compile_and_run)
-
-    # def scroll_to_bottom(self):
-    #     cursor = self.output_info.textCursor()
-    #     self.output_info.moveCursor(QTextCursor.MoveOperation.End)
-    #     scroll_bar = self.output_info.verticalScrollBar()
-    #     scroll_bar.setValue(scroll_bar.maximum())
 
     def create_menus(self):
         self.menu = self.menuBar()
@@ -189,8 +153,6 @@ class IDE(QMainWindow):
         self.red_r = r
 
     def compile_and_run(self):
-        """
-        """
         self.save_file()
         instream = self.left_widget.toPlainText()+" dollar"
         time = str(datetime.datetime.now()).split('.')[0]
