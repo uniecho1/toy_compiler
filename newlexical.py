@@ -38,8 +38,8 @@ class lexer:
 
     def read_operant(self, cursor):
         if cursor < len(self.instream) and self.instream[cursor] in ['{', '}', '(', ')', ';']:
-            return cursor+1
-        cursor_ = cursor
+            return cursor + 1
+        cursor_ = cursor + 1
         while cursor_ < len(self.instream) and self.instream[cursor_] in ['+', '-', '*', '/', '=', '<', '>']:
             cursor_ = cursor_+1
         return cursor_
