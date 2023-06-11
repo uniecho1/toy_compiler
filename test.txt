@@ -1,8 +1,18 @@
 {
-	n=100;
-	res=0;
-	while(n>=0){
-		res=res+n;
-		n=n-1;
+	a=998244353*3+1;
+	b=1e9+7*2;
+	while(b>0){
+		while(a>=b)
+			a=a-b;
+		if(a>=b)then{
+			c=a
+			d=b;
+		}		
+		else{
+			c=b;
+			d=a;
+		}
+		a=c;
+		b=d;
 	}
 }
