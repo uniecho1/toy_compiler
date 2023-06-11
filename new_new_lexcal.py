@@ -19,7 +19,7 @@ class lexer:
 
         self.op2 = ['<', '>', '=']
 
-        self.keywords = ["if", "then", "else", "while", "dollar"]
+        self.keywords = ["if", "then", "else", "while"]
 
     def get_token(self, cursor):
         stateu = 0
@@ -74,7 +74,7 @@ class lexer:
                         return ["error", line, column, f"\"{string}\" can't be accepted as a legal token.", cursor, cursor_]
                     column = column+len(string)
                     cursor = cursor_
-
+        token_stream .append(['$', None, line, column+1, cursor, cursor+1])
         return ["accept", token_stream, symbol_table]
 
     def delta(self, stateu, char):

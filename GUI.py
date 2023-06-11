@@ -116,7 +116,7 @@ class IDE(QMainWindow):
     def to_string(self, token_stream):
         res = ""
         for token in token_stream:
-            if token[0] == "dollar":
+            if token[0] == "$":
                 continue
             elif token[0] in ['ID', 'NUM']:
                 res = res+f"{token[0:2]}"+", "
@@ -154,7 +154,7 @@ class IDE(QMainWindow):
 
     def compile_and_run(self):
         self.save_file()
-        instream = self.left_widget.toPlainText()+" dollar"
+        instream = self.left_widget.toPlainText()
         time = str(datetime.datetime.now()).split('.')[0]
         self.update_output(f"Compile and Run at {time}:\n\n")
         self.update_output("[LexicalAnalyzing]\n")

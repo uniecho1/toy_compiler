@@ -1,7 +1,7 @@
 class parser:
     def __init__(self, token_stream):
         self.token_stream = token_stream
-        # ["dollar", None, token_stream[-1][2], token_stream[-1]
+        # ["$", None, token_stream[-1][2], token_stream[-1]
         #     [3]+len(token_stream[-1][0]), token_stream[-1][4], token_stream[-1][4]]
 
         self.grammar = []
@@ -110,7 +110,7 @@ class parser:
 
     def getfollow(self, cur, stack):
         if cur == "program":
-            return ["dollar"]
+            return ["$"]
         stack.append(cur)
         res = []
         for statement in self.grammar:
@@ -144,7 +144,7 @@ class parser:
 
     def build_syntax_tree(self):
         excpt = []
-        stack = [["dollar", 0, ["init"]],
+        stack = [["$", 0, ["init"]],
                  ["program", 1, ["init"]]]
         tabs = ["", ""]
         idx = 1
@@ -161,7 +161,7 @@ class parser:
                 del tabs[-1]
                 del stack[-1]
             elif token == token_stream[0][0]:
-                if stack[-1][0] != "dollar":
+                if stack[-1][0] != "$":
                     self.parsing_tree = self.parsing_tree + \
                         tabs[-1]+token+'\n'
                 self.node[id] = token_stream[0]
@@ -184,7 +184,7 @@ class parser:
                 idx = idx + len(statement) - 1
             else:
                 if token not in self.parsing_table and len(excpt) == 0:
-                    if token_stream[0][0] == "dollar":
+                    if token_stream[0][0] == "$":
                         token_stream[0][0] = "EOF"
                     return ["error", token_stream[0][2], token_stream[0][3], f"expected \"{token}\", but got {token_stream[0][0]}.", token_stream[0][4], token_stream[0][5]]
                 else:
@@ -199,7 +199,7 @@ class parser:
                             tmp = tmp+"\""+item+"\""+" "
                         if tmp[-1] == " ":
                             tmp = tmp[:-1]
-                        if token_stream[0][0] == "dollar":
+                        if token_stream[0][0] == "$":
                             token_stream[0][0] = "EOF"
                         return ["error", token_stream[0][2], token_stream[0][3], f"expected {tmp}, but not \"{token_stream[0][0]}\".", token_stream[0][4], token_stream[0][5]]
         return ["accept"]
